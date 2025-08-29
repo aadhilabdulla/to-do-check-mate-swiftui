@@ -20,6 +20,7 @@ class SignupViewModel : ObservableObject {
     
     @MainActor
     func signUp() async {
+        responseMessage = ""
         guard let url = URL(string: "http://localhost:4000/auth/signup") else {
             responseMessage = "Invalid URL"
             print("Invalid URL")

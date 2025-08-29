@@ -53,6 +53,12 @@ struct SignupPage: View {
             )
             .padding(.top)
             
+            if(signupViewModel.responseMessage != ""){
+                Text(signupViewModel.responseMessage)
+                    .foregroundStyle(Color.red)
+                    .padding(.top)
+            }
+            
             if (signupViewModel.isLoading) {
                 ProgressView()
                     .padding()
