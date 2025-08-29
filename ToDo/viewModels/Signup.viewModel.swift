@@ -48,7 +48,6 @@ class SignupViewModel : ObservableObject {
         } catch {
             responseMessage = "Error : \(error.localizedDescription)"
         }
-        
         isLoading = false
     }
     
