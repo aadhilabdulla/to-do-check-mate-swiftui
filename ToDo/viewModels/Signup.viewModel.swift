@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SignupResponse : Codable {
+struct Response : Codable {
     let success : Bool
     let message : String
 }
@@ -17,6 +17,8 @@ class SignupViewModel : ObservableObject {
     @Published var password : String = ""
     @Published var isLoading : Bool = false
     @Published var responseMessage : String = ""
+    @Published var isSignedup : Bool = false
+    @Published var isLoginSuccess : Bool = false
     
     @MainActor
     func signUp() async {
@@ -40,9 +42,44 @@ class SignupViewModel : ObservableObject {
             isLoading = true
             
             let (data, _) = try await URLSession.shared.data(for: request)
-            let decoded = try JSONDecoder().decode(SignupResponse.self, from: data)
+            let decoded = try JSONDecoder().decode(Response.self, from: data)
             
             responseMessage = decoded.message
+            isSignedup = decoded.success
+            print(responseMessage)
+            
+        } catch {
+            responseMessage = "Error : \(error.localizedDescription)"
+        }
+        isLoading = false
+    }
+    
+    func login() async {
+        responseMessage = ""
+        guard let url = URL(string: "http://localhost:4000/auth/login" ) else {
+            responseMessage = "Invalid URL"
+            print("Invalid URL")
+            return
+        }
+        
+        let user = User(email: email, password: password)
+        
+        do {
+            
+            let jsonData = try JSONEncoder().encode(user)
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = jsonData
+            
+            isLoading = true
+            
+            let ( data , _ ) = try await URLSession.shared.data(for: request)
+            let decoded = try JSONDecoder().decode(Response.self, from: data)
+            
+            responseMessage = decoded.message
+            isLoginSuccess = decoded.success
             print(responseMessage)
             
         } catch {

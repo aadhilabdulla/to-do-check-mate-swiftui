@@ -84,18 +84,42 @@ struct SignupPage: View {
                 }
                 
                 Button("Login In"){
-                    navigateToLogin = true
+                    Task {
+                        await signupViewModel.login()
+                        if(signupViewModel.isLoginSuccess) {
+                            navigateToLogin = true
+                            resetForm()
+                        }
+                    }
+                    
+                    
+                    
                 }
                 .foregroundColor(Color.black)
                 Spacer()
             }
+            .onChange(of : signupViewModel.isSignedup){
+                if signupViewModel.isSignedup {
+                    navigateToLogin = true
+                }
+            }
             .navigationDestination(isPresented: $navigateToLogin ){
-                LoginPage()
+                HomePage()
+                    .onAppear(){
+                        resetForm()
+                    }
             }
             .padding()
         }
         
         
+    }
+    
+    private func resetForm(){
+        signupViewModel.email = ""
+        signupViewModel.password = ""
+        signupViewModel.responseMessage = ""
+        signupViewModel.isSignedup = false
     }
 }
 
